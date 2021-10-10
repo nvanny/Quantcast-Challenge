@@ -4,11 +4,14 @@ import java.io.*;
 class most_active_cookie {
 
     static HashMap<String, Integer> cookieMap = new HashMap<String, Integer>();
+    static String date;
+    static String filename;
+    static List<String> csv;
     public static void main(String[] args) throws FileNotFoundException {
         // checking for all necessary params
         // System.out.println(args.length);
         if(args.length != 3) {
-            System.err.println("Check usage");
+            System.err.println("Check usage: format of ./most_active_cookie [filename] [-d flag] [date]");
         }
 
         // checking for d flag
@@ -17,33 +20,41 @@ class most_active_cookie {
         } 
 
         // parses through the csv via a scanner and creates a list to represent the csv
-        String date = args[2];
+        date = args[2];
 
-        List<String> csv = convertCSV(date, args[0]);
+        filename = args[0];
 
-        printCookies(date, csv);
+        csv = convertCSV();
+
+        printCookies();
     }
 
-    public static List<String> convertCSV(String date, String filename) throws FileNotFoundException {
+    public static List<String> convertCSV() throws FileNotFoundException {
         List<String> csv = new ArrayList<String>();
-        Scanner scan = new Scanner(new FileReader(filename));
-        scan.useDelimiter("\n");
-        while(scan.hasNext()) {
-            csv.add(scan.next());
+        try {
+            Scanner scan = new Scanner(new FileReader(filename));
+            scan.useDelimiter("\n");
+            while(scan.hasNext()) {
+                csv.add(scan.next());
+            }
+            scan.close();
+        } catch (FileNotFoundException fe) {
+            System.err.println("Filename" + filename + "not found");
+        } catch(Exception e) {
+            System.err.println("Please put a valid file format");
         }
-        scan.close();
-        return csv;
+        return csv; 
     }
 
-    public static void printCookies(String date, List<String> csv) {
+    public static void printCookies() {
         // gets the most active cookies and prints them
-        List<String> mostActiveCookies = getMostActive(date, csv);
+        List<String> mostActiveCookies = getMostActive();
         for(String cookie : mostActiveCookies) {
             System.out.println(cookie);
         }
     }
 
-    public static List<String> getMostActive(String date, List<String> csv) {
+    public static List<String> getMostActive() {
         List<String> cookieList = new ArrayList<>();
         int max = 0;
 
